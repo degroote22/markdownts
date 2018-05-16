@@ -82,10 +82,18 @@ describe("extractFromFolder", () => {
 
 describe("evalMarkdownFile", () => {
   test("it works with md files", () => {
-    const fileNameBefore = dir + "/_s1.md";
-    const fileNameAfter = dir + "/s1.md";
+    const fileNameBefore = dir + "/_s166.md";
+    const fileNameAfter = dir + "/s166.md";
     writeFile(fileNameBefore, readFile(ORIGINAL));
     evalMarkdownFile(fileNameBefore);
+    expect(readFile(fileNameAfter)).toBe(readFile(RESULT));
+  });
+
+  test("it works with custom prefix", () => {
+    const fileNameBefore = dir + "/#####s7.md";
+    const fileNameAfter = dir + "/s7.md";
+    writeFile(fileNameBefore, readFile(ORIGINAL));
+    evalMarkdownFile(fileNameBefore, { prefix: "#####" });
     expect(readFile(fileNameAfter)).toBe(readFile(RESULT));
   });
 

@@ -116,6 +116,19 @@ describe("extractTsFile", () => {
     );
   });
 
+  test("it works with custom prefix", () => {
+    const fileNameBefore = dir + "/#####s2.md";
+    const fileNameAfter = dir + "/s2.ts";
+    writeFile(
+      fileNameBefore,
+      readFile("./src/samples/withManyTypescript.md")
+    );
+    extractTsFile(fileNameBefore, { prefix: "#####" });
+    expect(readFile(fileNameAfter)).toBe(
+      readFile("./src/samples/withManyTypescript.ts")
+    );
+  });
+
   test("it works with custom suffix", () => {
     const fileNameBefore = dir + "/s2.md";
     const fileNameAfter = dir + "/s2.tsx";
