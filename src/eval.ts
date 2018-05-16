@@ -45,6 +45,32 @@ export const parseEvalLine = (
   };
 };
 
+export const putSemi = (s: string) => {
+  const endsWithSemi = s[s.length - 1] === ";";
+
+  return endsWithSemi ? s : s + ";";
+};
+
+export const getEvalued = (
+  _ts: string,
+  parsed: parseIs
+) => {
+  try {
+    const source = safeJoin(
+      _ts,
+      `eval(\`${parsed.content}\`);`
+    );
+    let js = ts.transpileModule(source, {
+      compilerOptions: {
+        module: ts.ModuleKind.CommonJS
+      }
+    }).outputText;
+    return eval(js);
+  } catch (err) {
+    return String(err);
+  }
+};
+
 // Inspired by
 // https://github.com/graphile/postgraphile/blob/master/examples/forum/scripts/build-schema
 export const _eval = (data: string) => {
@@ -61,27 +87,11 @@ export const _eval = (data: string) => {
           // If we have a line starting with eval( we will comment it so that it won't pop up errors.
           const parsed = parseEvalLine(line);
           if (parsed.is) {
-            let evalued = "NEVERSHOWTHISSTRING";
+            let evalued = getEvalued(curr.ts, parsed);
 
-            try {
-              const source = safeJoin(
-                curr.ts,
-                `eval("${parsed.content}")`
-              );
-              let js = ts.transpileModule(source, {
-                compilerOptions: {
-                  module: ts.ModuleKind.CommonJS
-                }
-              }).outputText;
-
-              evalued = eval(js);
-            } catch (err) {
-              evalued = String(err);
-            }
-
-            const newLine = `${
+            const newLine = `${putSemi(
               parsed.content
-            } // === ${evalued}`;
+            )} // === ${evalued}`;
 
             return {
               ts: curr.ts,
