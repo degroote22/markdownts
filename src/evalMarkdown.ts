@@ -1,20 +1,16 @@
-import { processTsString } from "./processTsString";
 import {
   ExtractOptions,
-  DEFAULT_SUFFIX_EXTRACT,
   DEFAULT_PEFIX,
   extract,
   extractFromFolder
 } from "./extract";
 import * as path from "path";
+import _eval from "./eval";
 
-export const extractTsFile = (
+export const evalMarkdownFile = (
   filename: string,
   options?: ExtractOptions
 ) => {
-  const suffix =
-    (options && options.extension) ||
-    DEFAULT_SUFFIX_EXTRACT;
   const destination = options && options.destination;
   const prefix =
     (options && options.prefix) || DEFAULT_PEFIX;
@@ -23,21 +19,20 @@ export const extractTsFile = (
 
   const baseName = _baseName.startsWith(prefix)
     ? _baseName.substring(prefix.length)
-    : _baseName;
+    : _baseName + ".eval";
 
   const newFilename =
     (destination || path.dirname(filename)) +
     "/" +
     baseName +
-    "." +
-    suffix;
+    ".md";
 
-  extract(filename, processTsString, newFilename);
+  extract(filename, _eval, newFilename);
 };
 
-export const extractTsFromFolder = (
+export const evalMarkdownFromFolder = (
   folderPath: string,
   options?: ExtractOptions
 ) => {
-  extractFromFolder(folderPath, extractTsFile, options);
+  extractFromFolder(folderPath, evalMarkdownFile, options);
 };

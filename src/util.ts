@@ -22,3 +22,19 @@ export const writeFile = (
 
 export const safeJoin = (old: string, line: string) =>
   old !== "" ? [old, line].join("\n") : line;
+
+export const deleteFolderRecursive = (path: string) => {
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(file => {
+      var curPath = path + "/" + file;
+      if (fs.lstatSync(curPath).isDirectory()) {
+        // recurse
+        deleteFolderRecursive(curPath);
+      } else {
+        // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+};
